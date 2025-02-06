@@ -25,10 +25,6 @@ yarn-error.log*
 # Docker
 docker-compose.override.yml
 
-# Sequelize auto-generated files
-src/database/migrations/
-src/database/seeders/
-
 # Build directories
 dist/
 build/
