@@ -1,15 +1,10 @@
-class CustumerController {
-  constructor() {
-    this.customers = {
-      1: { id: 1, name: "John Doe", email: "john@example.com" },
-      2: { id: 2, name: "Jane Smith", email: "jane@example.com" },
-      3: { id: 3, name: "Bob Johnson", email: "bob@example.com" },
-    };
-    this.nextId = 4;
-  }
+import Customer from "../models/Customer.js";
 
-  index(req, res) {
-    return res.json(this.customers);
+class CustomerController {
+  async index(req, res) {
+    const data = await Customer.findAll();
+
+    return res.json(data);
   }
 
   show(req, res) {
@@ -59,4 +54,4 @@ class CustumerController {
   }
 }
 
-export default new CustumerController();
+export default new CustomerController();

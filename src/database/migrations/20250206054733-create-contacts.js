@@ -20,7 +20,7 @@ module.exports = {
         unique: true,
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM("active", "inactive"),
         allowNull: false,
         defaultValue: "active",
       },
@@ -47,7 +47,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface) {
-    await queryInterface.dropTable("contacts");
+  down(queryInterface) {
+    return queryInterface.dropTable("contacts");
   },
 };

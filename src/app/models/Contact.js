@@ -12,14 +12,17 @@ class Contact extends Model {
       {
         sequelize,
         tableName: "contacts",
-      }
+      },
     );
 
     return this;
   }
 
   static associate(models) {
-    this.belongsTo(models.Customer, { foreignKey: "customer_id", as: "customer" });
+    this.belongsTo(models.Customer, {
+      foreignKey: "customer_id",
+      as: "customer",
+    });
   }
 }
 

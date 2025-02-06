@@ -4,13 +4,26 @@ class Customer extends Model {
   static init(sequelize) {
     super.init(
       {
-        name: Sequelize.STRING,
-        email: Sequelize.STRING,
-        status: Sequelize.ENUM("active", "archived"),
+        name: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+        email: {
+          type: Sequelize.STRING,
+          allowNull: false,
+          unique: true,
+        },
+        status: {
+          type: Sequelize.ENUM("active", "inactive"),
+          allowNull: false,
+          defaultValue: "active",
+        },
       },
       {
         sequelize,
         tableName: "customers",
+        timestamps: true,
+        underscored: true,
       },
     );
 

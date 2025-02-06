@@ -1,58 +1,35 @@
 "use strict";
 
-const { Model, DataTypes } = require("sequelize");
+import Sequelize, { Model } from "sequelize";
 
-module.exports = (sequelize) => {
-  class User extends Model {
-    static associate(models) {
-      // define association here
-    }
+class User extends Model {
+  static init(sequelize) {
+    super.init(
+      {
+        name: Sequelize.STRING,
+        email: {
+          type: Sequelize.STRING,
+          allowNull: false,
+          unique: true,
+        },
+        password_hash: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+      },
+      {
+        sequelize,
+        tableName: "users",
+        underscored: true,
+      },
+    );
+
+    return this;
   }
 
-  User.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password_hash: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      provider: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false,
-      },
-      created_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-      },
-      updated_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-      },
-    },
-    {
-      sequelize,
-      modelName: "User",
-      tableName: "users",
-      underscored: true,
-    },
-  );
+  static associate() {
+    // define association here, if needed
+  }
+}
 
-  return User;
-};
+export default User;

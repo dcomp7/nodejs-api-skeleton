@@ -20,24 +20,22 @@ module.exports = {
         unique: true,
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM("active", "inactive"),
         allowNull: false,
         defaultValue: "active",
       },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.fn("NOW"),
       },
       updated_at: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.fn("NOW"),
       },
     });
   },
 
   down(queryInterface) {
-    queryInterface.dropTable("customers");
+    return queryInterface.dropTable("customers");
   },
 };
