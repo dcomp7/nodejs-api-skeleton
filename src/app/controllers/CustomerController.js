@@ -2,6 +2,7 @@ import Customer from "../models/Customer.js";
 import Contact from "../models/Contact.js";
 import { Op } from "sequelize";
 import { parseISO } from "date-fns";
+import * as Yup from "yup";
 
 class CustomerController {
   async index(req, res) {
@@ -72,8 +73,18 @@ class CustomerController {
 
   async create(req, res) {
     try {
-      const { name, email } = req.body;
-      const newCustomer = await Customer.create({ name, email });
+      const { name, email, status } = req.body;
+      const schema = Yup.object().shape({
+        name: Yup.string().required(),
+        email: Yup.string().email().required(),
+        status: Yup.string().required(),
+      });
+
+      if (!(await schema.isValid(req.body))) {
+        return res.status(400).json({ error: "Validation fails" });
+      }
+
+      const newCustomer = await Customer.create({ name, email, status });
       return res.status(201).json(newCustomer);
     } catch {
       return res.status(500).json({ error: "Internal server error" });
@@ -84,6 +95,15 @@ class CustomerController {
     try {
       const { id } = req.params;
       const { name, email, status } = req.body;
+      const schema = Yup.object().shape({
+        name: Yup.string(),
+        email: Yup.string().email(),
+        status: Yup.string(),
+      });
+
+      if (!(await schema.isValid(req.body))) {
+        return res.status(400).json({ error: "Validation fails" });
+      }
 
       const customer = await Customer.findByPk(id);
 
