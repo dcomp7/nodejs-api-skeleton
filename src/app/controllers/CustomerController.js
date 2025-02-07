@@ -1,55 +1,119 @@
 import Customer from "../models/Customer.js";
+import Contact from "../models/Contact.js";
+import { Op } from "sequelize";
+import { parseISO } from "date-fns";
 
 class CustomerController {
   async index(req, res) {
-    const data = await Customer.findAll();
+    const {
+      name,
+      email,
+      status,
+      createdBefore,
+      createdAfter,
+      updatedBefore,
+      updatedAfter,
+      sort,
+    } = req.query;
+
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+
+    let where = {};
+    let order = [];
+
+    if (name) where = { ...where, name: { [Op.like]: `%${name}%` } };
+    if (email) where = { ...where, email: { [Op.like]: `%${email}%` } };
+    if (status) where = { ...where, status };
+    if (createdBefore)
+      where = { ...where, created_at: { [Op.lte]: parseISO(createdBefore) } };
+    if (createdAfter)
+      where = { ...where, created_at: { [Op.gte]: parseISO(createdAfter) } };
+    if (updatedBefore)
+      where = { ...where, updated_at: { [Op.lte]: parseISO(updatedBefore) } };
+    if (updatedAfter)
+      where = { ...where, updated_at: { [Op.gte]: parseISO(updatedAfter) } };
+
+    if (sort) {
+      order = sort.split(",").map((item) => item.split(":"));
+    }
+
+    const data = await Customer.findAll({
+      where,
+      include: [
+        {
+          model: Contact,
+          as: "contacts",
+          attributes: ["id"],
+        },
+      ],
+      order,
+      limit,
+      offset: limit * page - limit,
+    });
 
     return res.json(data);
   }
 
-  show(req, res) {
-    const { id } = req.params;
-    const customer = this.customers[id];
+  async show(req, res) {
+    try {
+      const { id } = req.params;
+      const customer = await Customer.findByPk(id);
 
-    if (customer) {
-      return res.json(customer);
-    } else {
-      return res.status(404).json({ error: "Customer not found" });
+      if (customer) {
+        return res.json(customer);
+      } else {
+        return res.status(404).json({ error: "Customer not found" });
+      }
+    } catch {
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 
-  create(req, res) {
-    const { name, email } = req.body;
-    const id = this.nextId++;
-    const newCustomer = { id, name, email };
-    this.customers[id] = newCustomer;
-
-    return res.status(201).json(newCustomer);
-  }
-
-  update(req, res) {
-    const { id } = req.params;
-    const { name, email } = req.body;
-    const customer = this.customers[id];
-
-    if (customer) {
-      customer.name = name;
-      customer.email = email;
-      return res.json(customer);
-    } else {
-      return res.status(404).json({ error: "Customer not found" });
+  async create(req, res) {
+    try {
+      const { name, email } = req.body;
+      const newCustomer = await Customer.create({ name, email });
+      return res.status(201).json(newCustomer);
+    } catch {
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 
-  destroy(req, res) {
-    const { id } = req.params;
-    const customer = this.customers[id];
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+      const { name, email, status } = req.body;
 
-    if (customer) {
-      delete this.customers[id];
+      const customer = await Customer.findByPk(id);
+
+      if (!customer) {
+        return res.status(404).json({ error: "Customer not found" });
+      }
+
+      await customer.update({ name, email, status });
+
+      return res.json(customer);
+    } catch {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const { id } = req.params;
+
+      const customer = await Customer.findByPk(id);
+
+      if (!customer) {
+        return res.status(404).json({ error: "Customer not found" });
+      }
+
+      await customer.destroy();
+
       return res.status(204).send();
-    } else {
-      return res.status(404).json({ error: "Customer not found" });
+    } catch {
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 }

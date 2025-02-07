@@ -7,6 +7,6 @@ routes.get("/customer", customer.index);
 routes.get("/customer/:id", customer.show);
 routes.post("/customer", customer.create);
 routes.put("/customer/:id", customer.update);
-routes.delete("/customer/:id", customer.destroy);
+routes.delete("/customer/:id", customer.delete);
 
 export default routes;
