@@ -22,8 +22,10 @@ class Customer extends Model {
       {
         sequelize,
         tableName: "customers",
-        timestamps: true,
-        underscored: true,
+        name: {
+          singular: "customer",
+          plural: "customers",
+        },
       },
     );
 
