@@ -13,6 +13,7 @@ class User extends Model {
           allowNull: false,
           unique: true,
         },
+        fileId: Sequelize.STRING,
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
       },
@@ -24,7 +25,6 @@ class User extends Model {
     );
 
     this.addHook("beforeSave", async (user) => {
-      console.log("tentando cravar o pass hash !!!!!!!");
       if (user.password) {
         user.password_hash = await bcrypt.hash(user.password, 8);
       }
@@ -35,6 +35,10 @@ class User extends Model {
 
   checkPassword(password) {
     return bcrypt.compare(password, this.password_hash);
+  }
+
+  static associate(models) {
+    this.belongsTo(models.File, { foreignKey: "fileId", as: "photo" });
   }
 }
 

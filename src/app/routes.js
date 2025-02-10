@@ -1,32 +1,38 @@
-import { Router } from "express";
+import express from "express";
 import authMiddleware from "./middlewares/auth.js";
 import customer from "./controllers/CustomerController";
 import contact from "./controllers/ContactController";
 import user from "./controllers/UserController";
 import session from "./controllers/SessionController";
+import file from "./controllers/FileController";
+import multer from "multer";
+import multerConfig from "../config/multer";
 
-const routes = new Router();
+const router = express.Router();
+const uploadMiddleware = multer(multerConfig);
 
-routes.post("/sessions", session.create);
+router.post("/sessions", session.create);
 
-routes.use(authMiddleware);
+// Authenticated routes
+router.use(authMiddleware);
+router.get("/customers", customer.index);
+router.get("/customers/:id", customer.show);
+router.post("/customers", customer.create);
+router.put("/customers/:id", customer.update);
+router.delete("/customers/:id", customer.delete);
 
-routes.get("/customers", customer.index);
-routes.get("/customers/:id", customer.show);
-routes.post("/customers", customer.create);
-routes.put("/customers/:id", customer.update);
-routes.delete("/customers/:id", customer.delete);
+router.get("/customers/:customerId/contacts", contact.index);
+router.get("/customers/:customerId/contacts/:id", contact.show);
+router.post("/customers/:customerId/contacts", contact.create);
+router.put("/customers/:customerId/contacts/:id", contact.update);
+router.delete("/customers/:customerId/contacts/:id", contact.delete);
 
-routes.get("/customers/:customerId/contacts", contact.index);
-routes.get("/customers/:customerId/contacts/:id", contact.show);
-routes.post("/customers/:customerId/contacts", contact.create);
-routes.put("/customers/:customerId/contacts/:id", contact.update);
-routes.delete("/customers/:customerId/contacts/:id", contact.delete);
+router.get("/users", user.index);
+router.get("/users/:id", user.show);
+router.post("/users", user.create);
+router.put("/users/:id", user.update);
+router.delete("/users/:id", user.delete);
 
-routes.get("/users", user.index);
-routes.get("/users/:id", user.show);
-routes.post("/users", user.create);
-routes.put("/users/:id", user.update);
-routes.delete("/users/:id", user.delete);
+router.post("/files", uploadMiddleware.single("file"), file.create);
 
-export default routes;
+export default router;

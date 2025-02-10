@@ -50,7 +50,9 @@ class UserController {
   async show(req, res) {
     try {
       const { id } = req.params;
-      const user = await User.findByPk(id);
+      const user = await User.findByPk(id, {
+        attributes: { exclude: ["password", "password_hash"] },
+      });
 
       if (user) {
         return res.json(user);
@@ -79,10 +81,11 @@ class UserController {
         return res.status(400).json({ error: "Validation fails" });
       }
 
-      const { id, name, email, createdAt, updatedAt } = await User.create(
-        req.body,
-      );
-      return res.status(201).json({ id, name, email, createdAt, updatedAt });
+      const { id, name, email, fileId, createdAt, updatedAt } =
+        await User.create(req.body);
+      return res
+        .status(201)
+        .json({ id, name, email, fileId, createdAt, updatedAt });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ error: "Internal server error" });
@@ -138,9 +141,11 @@ class UserController {
 
       user.set(req.body);
 
-      const { name, email, createdAt, updatedAt } = await user.save();
+      const { name, email, fileId, createdAt, updatedAt } = await user.save();
 
-      return res.status(201).json({ id, name, email, createdAt, updatedAt });
+      return res
+        .status(201)
+        .json({ id, name, email, fileId, createdAt, updatedAt });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Internal server error" });
