@@ -1,7 +1,8 @@
-import User from "../models/User.js";
+import User from "../models/User";
 import { Op } from "sequelize";
 import { parseISO } from "date-fns";
 import * as Yup from "yup";
+import Mail from "../../lib/Mail";
 
 class UserController {
   async index(req, res) {
@@ -77,12 +78,24 @@ class UserController {
         ),
       });
 
-      if (!(await schema.isValid(req.body))) {
-        return res.status(400).json({ error: "Validation fails" });
+      try {
+        await schema.validate(req.body, { abortEarly: false });
+      } catch (err) {
+        console.log("Validation error:", err.errors);
+        return res
+          .status(400)
+          .json({ error: "Validation fails", messages: err.errors });
       }
 
       const { id, name, email, fileId, createdAt, updatedAt } =
         await User.create(req.body);
+
+      Mail.send({
+        to: email,
+        subject: "Bem-vindo(a)",
+        text: `Olá, ${name}, seja bem-vindo(a) ao sistema!`,
+      });
+
       return res
         .status(201)
         .json({ id, name, email, fileId, createdAt, updatedAt });
