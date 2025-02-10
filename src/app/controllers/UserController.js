@@ -2,7 +2,8 @@ import User from "../models/User";
 import { Op } from "sequelize";
 import { parseISO } from "date-fns";
 import * as Yup from "yup";
-import Mail from "../../lib/Mail";
+import Queue from "../../lib/Queue";
+import { WelcomeEmailJob } from "../jobs";
 
 class UserController {
   async index(req, res) {
@@ -90,11 +91,7 @@ class UserController {
       const { id, name, email, fileId, createdAt, updatedAt } =
         await User.create(req.body);
 
-      Mail.send({
-        to: email,
-        subject: "Bem-vindo(a)",
-        text: `Olá, ${name}, seja bem-vindo(a) ao sistema!`,
-      });
+      await Queue.add(WelcomeEmailJob.key, { email, name });
 
       return res
         .status(201)
