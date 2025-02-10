@@ -1,12 +1,14 @@
+import "dotenv/config";
+
 export default {
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
-  secure: false,
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.MAIL_SECURE === "true",
   auth: {
-    user: "892cb76d0ab44f",
-    pass: "f21c7fc9d61389",
+    user: process.env.MAIL_AUTH_USER,
+    pass: process.env.MAIL_AUTH_PASS,
   },
   default: {
-    from: "Nao responda <naoresponda@example.com>",
+    from: process.env.MAIL_DEFAULT_FROM,
   },
 };

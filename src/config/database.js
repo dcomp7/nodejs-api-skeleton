@@ -1,31 +1,30 @@
-const config = {
+import "dotenv/config";
+
+export default {
   development: {
-    username: "postgres",
-    password: "secret",
-    database: "mydb",
-    host: "127.0.0.1",
-    dialect: "postgres",
+    username: process.env.DB_DEV_USERNAME,
+    password: process.env.DB_DEV_PASSWORD,
+    database: process.env.DB_DEV_DATABASE,
+    host: process.env.DB_DEV_HOST,
+    dialect: process.env.DB_DEV_DIALECT,
     define: {
-      timestamps: true,
-      underscored: true,
-      underscoredAll: true,
+      timestamps: process.env.DB_DEV_DEFINE_TIMESTAMPS === "true",
+      underscored: process.env.DB_DEV_DEFINE_UNDERSCORED === "true",
+      underscoredAll: process.env.DB_DEV_DEFINE_UNDERSCOREDALL === "true",
     },
   },
   test: {
-    username: "root",
-    password: "password",
-    database: "database_test",
-    host: "127.0.0.1",
-    dialect: "mysql",
+    username: process.env.DB_TEST_USERNAME,
+    password: process.env.DB_TEST_PASSWORD,
+    database: process.env.DB_TEST_DATABASE,
+    host: process.env.DB_TEST_HOST,
+    dialect: process.env.DB_TEST_DIALECT,
   },
   production: {
-    username: "root",
-    password: "password",
-    database: "database_production",
-    host: "127.0.0.1",
-    dialect: "mysql",
+    username: process.env.DB_PROD_USERNAME,
+    password: process.env.DB_PROD_PASSWORD,
+    database: process.env.DB_PROD_DATABASE,
+    host: process.env.DB_PROD_HOST,
+    dialect: process.env.DB_PROD_DIALECT,
   },
 };
-
-//export default config;
-module.exports = config;

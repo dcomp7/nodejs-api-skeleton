@@ -5,7 +5,11 @@ import { extname, resolve } from "path";
 export default {
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, resolve(__dirname, "..", "..", "tmp", "uploads"));
+      cb(
+        null,
+        process.env.STORAGE_DESTINATION ||
+          resolve(__dirname, "..", "..", "tmp", "uploads"),
+      );
     },
     filename: (req, file, cb) => {
       crypto.randomBytes(16, (err, res) => {
