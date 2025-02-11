@@ -13,6 +13,10 @@ const uploadMiddleware = multer(multerConfig);
 
 router.post("/sessions", session.create);
 
+router.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
+
 // Authenticated routes
 router.use(authMiddleware);
 router.get("/customers", customer.index);
