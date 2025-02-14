@@ -8,7 +8,7 @@ export default {
       cb(
         null,
         process.env.STORAGE_DESTINATION ||
-          resolve(__dirname, "..", "..", "tmp", "uploads"),
+          resolve(__dirname, "..", "..", "media", "uploads"),
       );
     },
     filename: (req, file, cb) => {
